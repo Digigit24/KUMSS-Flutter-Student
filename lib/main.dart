@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp.router(
+    return MaterialApp.router(
       title: 'KUMSSERP Student',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,

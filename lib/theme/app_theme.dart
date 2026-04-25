@@ -19,7 +19,7 @@ class AppTheme {
           color: AppColors.textPrimary,
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         color: AppColors.background,
@@ -123,7 +123,7 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.backgroundDark,
       appBarTheme: AppBarTheme(
         elevation: 0,
-        centerTitle: false,
+        centerTitle: false,                
         backgroundColor: AppColors.surfaceDark,
         foregroundColor: AppColors.textPrimaryDark,
         iconTheme: const IconThemeData(color: AppColors.textPrimaryDark),
@@ -131,7 +131,7 @@ class AppTheme {
           color: AppColors.textPrimaryDark,
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         color: AppColors.surfaceDark,

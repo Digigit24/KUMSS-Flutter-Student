@@ -1,5 +1,6 @@
 import '../models/auth.dart';
 import '../services/config.dart';
+import '../services/api_service.dart';
 
 abstract class AuthRepository {
   Future<LoginResponse> login(LoginRequest request);
@@ -13,28 +14,37 @@ abstract class AuthRepository {
 class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<LoginResponse> login(LoginRequest request) async {
-    if (Config.USE_MOCK_DATA) {
-      // Simulate network delay
-      await Future.delayed(const Duration(seconds: 1));
-
-      // Mock implementation - accept any email with password validation
-      return LoginResponse(
-        accessToken: 'mock_access_token_${DateTime.now().millisecondsSinceEpoch}',
-        refreshToken: 'mock_refresh_token_${DateTime.now().millisecondsSinceEpoch}',
-        studentId: '1',
-        collegeId: 'KUMSS001',
-        userName: 'John Doe',
-        email: request.email,
-        profilePhotoUrl: 'https://via.placeholder.com/150',
+    try {
+      final response = await ApiService().dio.post(
+        "/auth/login/",
+        data: request.toJson(),
       );
-    } else {
-      // TODO: Implement real API call
-      // final response = await ApiService().dio.post(
-      //   '/auth/login/',
-      //   data: request.toJson(),
-      // );
-      // return LoginResponse.fromJson(response.data);
-      throw UnimplementedError('Real API implementation pending');
+
+      final data = response.data;
+
+      print("🔥 LOGIN RESPONSE: $data");
+
+      // ✅ FIX RESPONSE STRUCTURE
+      final access = data["access"];
+      final refresh = data["refresh"];
+
+      final user = data["user"] ?? {};
+
+      // ✅ SAVE TOKEN
+      await ApiService().setAuthToken(access);
+
+      return LoginResponse(
+        accessToken: access ?? '',
+        refreshToken: refresh ?? '',
+        studentId: user["student_id"]?.toString() ?? '',
+        collegeId: user["college_id"]?.toString() ?? '',
+        userName: user["username"] ?? '',
+        email: user["email"] ?? '',
+        profilePhotoUrl: user["profile_photo"],
+      );
+    } catch (e) {
+      print("❌ LOGIN ERROR: $e");
+      rethrow;
     }
   }
 

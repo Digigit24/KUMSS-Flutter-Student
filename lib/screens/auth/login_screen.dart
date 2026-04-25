@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
+import '../../repositories/auth_repository.dart';
+import '../../models/auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -33,22 +35,27 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      // TODO: Implement actual login
-      // For now, accept any email with password "demo"
-      final email = _emailController.text.trim();
-      final password = _passwordController.text;
+      final repo = AuthRepositoryImpl();
 
-      if (password == 'demo') {
-        // Simulated successful login
-        await Future.delayed(const Duration(seconds: 1));
-        if (mounted) {
-          context.go('/dashboard');
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Invalid credentials. Use password: demo')),
-        );
+      final res = await repo.login(
+        LoginRequest(
+          username: _emailController.text.trim(), // ✅ IMPORTANT
+          password: _passwordController.text,
+        ),
+      );
+
+      print("✅ LOGIN SUCCESS: ${res.accessToken}");
+
+      if (mounted) {
+        context.go('/dashboard'); // ✅ navigate after success
       }
+
+    } catch (e) {
+      print("❌ LOGIN FAILED: $e");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Invalid credentials")),
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -130,17 +137,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           TextFormField(
                             controller: _emailController,
                             decoration: InputDecoration(
-                              labelText: 'Email',
-                              hintText: 'Enter your email',
-                              prefixIcon: const Icon(Icons.email_outlined),
+                              labelText: 'Username',
+                              hintText: 'Enter your Username',
+                              prefixIcon: const Icon(Icons.person),
                             ),
                             keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              if (value?.isEmpty ?? true) {
-                                return 'Please enter your email';
-                              }
-                              if (!value!.contains('@')) {
-                                return 'Please enter a valid email';
+                            validator: (value) {                         
+                              
+                              
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Please enter a valid username';
                               }
                               return null;
                             },

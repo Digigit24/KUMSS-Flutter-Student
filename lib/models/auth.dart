@@ -1,16 +1,16 @@
 /// Login credentials
 class LoginRequest {
-  final String email;
+  final String username;
   final String password;
 
   LoginRequest({
-    required this.email,
+    required this.username,
     required this.password,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'email': email,
+      'username': username,
       'password': password,
     };
   }
@@ -37,6 +37,7 @@ class LoginResponse {
   });
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
+    final user = json['user'] ?? {};
     return LoginResponse(
       accessToken: json['access_token'] ?? '',
       refreshToken: json['refresh_token'] ?? '',
